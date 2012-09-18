@@ -41,17 +41,7 @@ public class WebxmlCommands implements CommandMarker { // All command types must
     public boolean isCommandAvailable() {
         return operations.isCommandAvailable();
     }
-    
-    /**
-     * This method registers a command with the Roo shell. It also offers a mandatory command attribute.
-     * 
-     * @param type 
-     */
-    @CliCommand(value = "webxml add", help = "Some helpful description")
-    public void add(@CliOption(key = "type", mandatory = true, help = "The java type to apply this annotation to") JavaType target) {
-        operations.annotateType(target);
-    }
-    
+ 
     @CliCommand(value = "webxml add-servlet", help = "Add a new servlet definition to web.xml")
     public void addServlet(@CliOption(key = "name", mandatory = true, help = "The servlet-name web.xml tag value") String name, 
           @CliOption(key = "class", mandatory = true, help = "The servlet-class web.xml tag value") String clazz,
@@ -74,23 +64,5 @@ public class WebxmlCommands implements CommandMarker { // All command types must
           @CliOption(key = "value", mandatory = true, help = "The env-entry-value web.xml tag value") String value,
           @CliOption(key = "comment", mandatory = false, help = "A xml comment to add into web.xml for this entry") String comment){
        operations.addEnvironmentEntry(name, type, value, comment);
-    }
-    
-    /**
-     * This method registers a command with the Roo shell. It has no command attribute.
-     * 
-     */
-    @CliCommand(value = "webxml all", help = "Some helpful description")
-    public void all() {
-        operations.annotateAll();
-    }
-    
-    /**
-     * This method registers a command with the Roo shell. It has no command attribute.
-     * 
-     */
-    @CliCommand(value = "webxml setup", help = "Setup Webxml addon")
-    public void setup() {
-        operations.setup();
     }
 }

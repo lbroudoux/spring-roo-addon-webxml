@@ -52,46 +52,11 @@ public class WebxmlOperationsImpl implements WebxmlOperations {
      */
     @Reference private ProjectOperations projectOperations;
 
-    /**
-     * Use TypeLocationService to find types which are annotated with a given annotation in the project
-     */
-    @Reference private TypeLocationService typeLocationService;
-    
-    /**
-     * Use TypeManagementService to change types
-     */
-    @Reference private TypeManagementService typeManagementService;
 
     /** {@inheritDoc} */
     public boolean isCommandAvailable() {
         // Check if a project has been created
         return projectOperations.isFocusedProjectAvailable();
-    }
-
-    /** {@inheritDoc} */
-    public void annotateType(JavaType javaType) {
-        // Use Roo's Assert type for null checks
-        Validate.notNull(javaType, "Java type required");
-
-        // Obtain ClassOrInterfaceTypeDetails for this java type
-        ClassOrInterfaceTypeDetails existing = typeLocationService.getTypeDetails(javaType);
-
-        // Test if the annotation already exists on the target type
-        if (existing != null && MemberFindingUtils.getAnnotationOfType(existing.getAnnotations(), new JavaType(RooWebxml.class.getName())) == null) {
-            ClassOrInterfaceTypeDetailsBuilder classOrInterfaceTypeDetailsBuilder = new ClassOrInterfaceTypeDetailsBuilder(existing);
-            
-            // Create JavaType instance for the add-ons trigger annotation
-            JavaType rooRooWebxml = new JavaType(RooWebxml.class.getName());
-
-            // Create Annotation metadata
-            AnnotationMetadataBuilder annotationBuilder = new AnnotationMetadataBuilder(rooRooWebxml);
-            
-            // Add annotation to target type
-            classOrInterfaceTypeDetailsBuilder.addAnnotation(annotationBuilder.build());
-            
-            // Save changes to disk
-            typeManagementService.createOrUpdateTypeOnDisk(classOrInterfaceTypeDetailsBuilder.build());
-        }
     }
     
     /** {@inheritDoc} */
@@ -113,33 +78,6 @@ public class WebxmlOperationsImpl implements WebxmlOperations {
        Document webXmlDoc = retrieveWebXmlDocument();
        addEnvironmentEntry(webXmlDoc, name, type, value, comment);
        writeWebXmlDocument(webXmlDoc);
-    }
-
-    /** {@inheritDoc} */
-    public void annotateAll() {
-        // Use the TypeLocationService to scan project for all types with a specific annotation
-        for (JavaType type: typeLocationService.findTypesWithAnnotation(new JavaType("org.springframework.roo.addon.javabean.RooJavaBean"))) {
-            annotateType(type);
-        }
-    }
-    
-    /** {@inheritDoc} */
-    public void setup() {
-        // Install the add-on Google code repository needed to get the annotation 
-        projectOperations.addRepository("", new Repository("Webxml Roo add-on repository", "Webxml Roo add-on repository", "https://com-github-lbroudoux-roo-addon-webxml.googlecode.com/svn/repo"));
-        
-        List<Dependency> dependencies = new ArrayList<Dependency>();
-        
-        // Install the dependency on the add-on jar (
-        dependencies.add(new Dependency("com.github.lbroudoux.roo.addon", "com.github.lbroudoux.roo.addon.webxml", "0.1.0.BUILD-SNAPSHOT", DependencyType.JAR, DependencyScope.PROVIDED));
-        
-        // Install dependencies defined in external XML file
-        for (Element dependencyElement : XmlUtils.findElements("/configuration/batch/dependencies/dependency", XmlUtils.getConfiguration(getClass()))) {
-            dependencies.add(new Dependency(dependencyElement));
-        }
-
-        // Add all new dependencies to pom.xml
-        projectOperations.addDependencies("", dependencies);
     }
     
     private Document retrieveWebXmlDocument(){

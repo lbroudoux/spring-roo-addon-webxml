@@ -10,7 +10,6 @@ web mvc setup
 hint
 osgi start --url file:///home/laurent/dev/repository/com/github/lbroudoux/roo/addon/com.github.lbroudoux.roo.addon.webxml/0.1.0.BUILD-SNAPSHOT/com.github.lbroudoux.roo.addon.webxml-0.1.0.BUILD-SNAPSHOT.jar
 osgi ps
-webxml setup
 osgi update --bundleSymbolicName com.github.lbroudoux.roo.addon.webxml
 webxml add-env-entry --name myEntry --type java.lang.String --value myValue --comment "Setting up myEntry value"
 webxml add-servlet --name myServlet --class com.github.lbroudoux.roo.servlet.MyServlet --mapping /myServlet/* --loading 1
